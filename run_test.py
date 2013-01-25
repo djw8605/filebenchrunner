@@ -43,7 +43,6 @@ def build_simulation(config, run):
         pass
         
     sim_output = 'modified_simfile.f'
-    print sim_string[1955:1965]
     open(sim_output, 'w').write(sim_string % variables)
     return sim_output
     
