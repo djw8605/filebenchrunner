@@ -92,7 +92,7 @@ def main():
         conn = S3Connection(access_key, secret_key)
         bucket = conn.create_bucket("dweitzel")
         k = Key(bucket)
-        k.key = ("filebench/tests/%s-%s/simout.txt" % (get_config_val(config, run, 'uniqueid'), run)
+        k.key = "filebench/tests/%s-%s/simout.txt" % (get_config_val(config, run, 'uniqueid'), run)
         k.set_contents_from_filename('/tmp/simout.txt')
 
 
