@@ -88,7 +88,7 @@ def main():
         # Send the simulation results to s3
         access_key = open(get_config_val(config, run, 'access_key')).read()
         secret_key = open(get_config_val(config, run, 'secret_key')).read()
-        conn = S3Connection(access_key, secret)
+        conn = S3Connection(access_key, secret_key)
         bucket = conn.create_bucket("dweitzel")
         k = Key(bucket)
         k.key = ("filebench/tests/%s-%s" % get_config_val(config, run, 'uniqueid'))
