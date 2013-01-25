@@ -72,7 +72,7 @@ def main():
         file_system_type = get_config_val(config, run, 'fstype')
         
         # Unmount the filesystem
-        subprocess.call("unmount %s" % file_system_dir, shell=True)
+        subprocess.call("umount %s" % file_system_dir, shell=True)
         
         # Format the filesystem
         subprocess.call("mkfs.%s %s" % (file_system_type, raw_dev) , shell=True)
