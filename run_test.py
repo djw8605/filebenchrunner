@@ -1,14 +1,14 @@
 #!/usr/bin/python
 
 import ConfigParser
-import argparse
+import optparse
 import sys
 import subprocess
 import urllib
 
 
 def build_parser(parser):
-    parser.add_argument('-c', '--config',
+    parser.add_option('-c', '--config',
                        help='Configuration file', dest="config", metavar='file')
     return parser
 
@@ -25,14 +25,35 @@ def build_simulation(config, run):
     # Get the model simulation file
     simulation_file = get_config_val(config, run, 'simfile')
     
+    sim_config = open(simulation_file)
+    sim_string = sim_config.read()
+    variables = {}
+    
+    # Get all variables in the general
+    for variable, value in config.items("general"):
+        print "Adding %s = %s" % (variable, value)
+        variables[variable] = value
+    
+    # get all variables in the run
+    try:
+        for variable, value in config.items("run-%s" % str(run)):
+            print "Adding %s = %s" % (variable, value)
+            variables[variable] = value
+    except:
+        pass
+        
+    sim_output = 'modified_simfile.f'
+    print sim_string[1955:1965]
+    open(sim_output, 'w').write(sim_string % variables)
+    return sim_output
     
 
 def main():
     
     # First, read in command line
-    cmd_parser = argparse.ArgumentParser()
+    cmd_parser = optparse.OptionParser()
     cmd_parser = build_parser(cmd_parser)
-    parsed_namespace = cmd_parser.parse_args()
+    (parsed_namespace, args) = cmd_parser.parse_args()
     if parsed_namespace.config is None:
         print "Did not specify config file"
         sys.exit(1)
@@ -57,15 +78,16 @@ def main():
         subprocess.call("mkfs.%s %s" % (file_system_type, raw_dev) , shell=True)
         
         # Mount the filesystem
-        subprocess.call("mount %s %s" %  (raw_dev, file_system_dir))
+        subprocess.call("mount %s %s" %  (raw_dev, file_system_dir), shell=True)
         
         # Build the *.f file
-        build_simulation(config, run)
+        sim_file = build_simulation(config, run)
         
         # Execute the simulation
+        subprocess.call("filebench -f %s > /tmp/simout" % sim_file, shell=True)
         
         # Send the simulation results to s3
-    
+        
 
 
 if __name__ == "__main__":

@@ -23,12 +23,12 @@
 # Use is subject to license terms.
 #
 
-set $dir=%(fsdir)s
-set $nfiles=%(nfiles)s
+set $dir=/media/ephemeral0
+set $nfiles=10000
 set $meandirwidth=20
-set $meanfilesize=%(meanfilesize)s
-set $nthreads=%(nthreads)s
-set $iosize=%(iosize)s
+set $meanfilesize=128k
+set $nthreads=50
+set $iosize=1m
 set $meanappendsize=16k
 
 define fileset name=bigfileset,path=$dir,size=$meanfilesize,entries=$nfiles,dirwidth=$meandirwidth,prealloc=80
@@ -51,7 +51,7 @@ define process name=filereader,instances=1
   }
 }
 
-run %(numruns)s
+run 600
 echo  "File-server Version 3.0 personality successfully loaded"
 usage "Usage: set \$dir=<dir>"
 usage "       set \$meanfilesize=<size>     defaults to $meanfilesize"
