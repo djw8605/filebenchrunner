@@ -4,7 +4,7 @@ import ConfigParser
 import optparse
 import sys
 import subprocess
-import urllib
+from boto.s3.connection import S3Connection
 
 
 def build_parser(parser):
@@ -84,10 +84,16 @@ def main():
         sim_file = build_simulation(config, run)
         
         # Execute the simulation
-        subprocess.call("filebench -f %s > /tmp/simout" % sim_file, shell=True)
+        subprocess.call("filebench -f %s > /tmp/simout.txt" % sim_file, shell=True)
         
         # Send the simulation results to s3
-        
+        access_key = open(get_config_val(config, run, access_key)).read()
+        secret_key = open(get_config_val(config, run, secret_key)).read()
+        conn = S3Connection(access_key, secret)
+        bucket = conn.create_bucket("dweitzel")
+        k = Key(bucket)
+        k.key = ("filebench/tests/%s-%s" % get_config_val(config, run, 'uniqueid'))
+        k.set_contents_from_filename('/tmp/simout.txt')
 
 
 if __name__ == "__main__":
