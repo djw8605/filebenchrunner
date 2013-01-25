@@ -5,6 +5,7 @@ import optparse
 import sys
 import subprocess
 from boto.s3.connection import S3Connection
+from boto.s3.key import Key
 
 
 def build_parser(parser):
@@ -86,8 +87,8 @@ def main():
         subprocess.call("filebench -f %s > /tmp/simout.txt" % sim_file, shell=True)
         
         # Send the simulation results to s3
-        access_key = open(get_config_val(config, run, 'access_key')).read()
-        secret_key = open(get_config_val(config, run, 'secret_key')).read()
+        access_key = open(get_config_val(config, run, 'access_key')).read().strip()
+        secret_key = open(get_config_val(config, run, 'secret_key')).read().strip()
         conn = S3Connection(access_key, secret_key)
         bucket = conn.create_bucket("dweitzel")
         k = Key(bucket)
